@@ -18,9 +18,7 @@ public class CameraController : MonoBehaviour
     {   
         //edgepan
         mousePosition = Input.mousePosition;
-        Debug.Log(mousePosition);
-        Debug.Log("height = " + Screen.height);
-        Debug.Log("witdh = " + Screen.width);
+        
         
     }
     private void FixedUpdate()
