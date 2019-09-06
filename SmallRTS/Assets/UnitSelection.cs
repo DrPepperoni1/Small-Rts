@@ -6,6 +6,7 @@ public class UnitSelection : MonoBehaviour
 {
     public static List<GameObject> selectedUnits = new List<GameObject>();
     public static List<GameObject> unitsOnScreen = new List<GameObject>();
+    public static List<GameObject> unitsInDragg = new List<GameObject>();
     
 
     public LayerMask unitLayer;
@@ -13,9 +14,10 @@ public class UnitSelection : MonoBehaviour
     bool dragging = false;
     Vector3 GUIstart;
     Vector3 GUIend;
-    Vector2 collisionBoxStart;
-    Vector2 collisionBoxEnd;
+    static Vector2 collisionBoxStart;
+    static Vector2 collisionBoxEnd;
     public GUIStyle mouseDragSkin;
+    bool draggEndedOnThisFrame = false;
 
     // GuiVariables
     float width;
@@ -85,7 +87,7 @@ public class UnitSelection : MonoBehaviour
         {
             if (dragging)
             {
-                dragging = false;
+                draggEndedOnThisFrame = true;
                  
 
             }
@@ -97,9 +99,10 @@ public class UnitSelection : MonoBehaviour
     }
     private void LateUpdate()
     {
-        foreach (GameObject obj in unitsOnScreen)
+        unitsInDragg.Clear();
+        if (dragging && draggEndedOnThisFrame && unitsOnScreen.Count > 0)
         {
-            Debug.Log(obj);
+
         }
     }
     private void OnGUI()
@@ -127,6 +130,14 @@ public class UnitSelection : MonoBehaviour
         }
         return false;
     }
+    public static bool ShiftKeyDown()
+    {
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            return true;
+        }
+        else return false;
+    }
     public static void RemoveUnitFromScreenList(GameObject unit)
     {
         for (int i = 0; i < unitsOnScreen.Count; i++)
@@ -139,5 +150,66 @@ public class UnitSelection : MonoBehaviour
             }
         }
         return;
+    }
+    public static bool IsUnitInsideSelection(Vector2 unitPosition)
+    {
+        if ((unitPosition.x > collisionBoxStart.x && unitPosition.y > collisionBoxStart.y) &&
+            (unitPosition.x < collisionBoxEnd.x && unitPosition.y < collisionBoxEnd.y))
+        {
+            return true;
+        }
+        else return false;
+    }
+    public static bool UnitAlreadyInDragg(GameObject unit)
+    {
+        if (unitsInDragg.Count > 0)
+        {
+            for (int i = 0; i < unitsInDragg.Count; i++)
+            {
+                GameObject unitGO = unitsInDragg[i];
+                if (unit == unitGO)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else return false;
+    }
+    public static bool UnitAlreadySelected(GameObject unit)
+    {
+        if (selectedUnits.Count > 0)
+        {
+            for (int i = 0; i < selectedUnits.Count; i++)
+            {
+                GameObject unitGo = selectedUnits[i];
+                if (unit == unitGo)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else return false;
+    }
+    public static void SelectAllDraggedUnits()
+    {
+        if (!ShiftKeyDown())
+        {
+            selectedUnits.Clear();
+        }
+        if (unitsInDragg.Count > 0)
+        {
+            for (int i = 0; i < unitsInDragg.Count; i++)
+            {
+                GameObject unit = unitsInDragg[i] as GameObject;
+                if (!UnitAlreadySelected(unit))
+                {
+                    selectedUnits.Add(unit);
+                    unit.GetComponent<Unit>().selected = true;
+                }
+            }
+            unitsInDragg.Clear();
+        }
     }
 }
