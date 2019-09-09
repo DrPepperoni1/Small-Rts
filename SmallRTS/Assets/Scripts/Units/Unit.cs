@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Pathfinding;
 
 // Unit Base class 
 public class Unit : MonoBehaviour
@@ -10,8 +10,12 @@ public class Unit : MonoBehaviour
     public Vector2 screenSpacePosition;
     public bool onScreen;
     public bool selected = false;
+    
     #endregion
-
+    public virtual void Start()
+    {
+        
+    }
     public virtual void Update()
     {
         if (!selected)
@@ -21,7 +25,7 @@ public class Unit : MonoBehaviour
             {
                 if (!onScreen)
                 {
-                    UnitSelection.unitsOnScreen.Add(gameObject);
+                    UnitSelection.UnitsOnScreen.Add(gameObject);
                     onScreen = true;
                 }
                 
@@ -35,5 +39,9 @@ public class Unit : MonoBehaviour
                 }
             }
         }
+    }
+    public virtual void Move(Vector3 _position)
+    {
+        
     }
 }

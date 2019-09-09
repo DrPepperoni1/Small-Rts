@@ -5,10 +5,10 @@ using UnityEngine;
 public class UnitSelection : MonoBehaviour
 {
     [SerializeField]
-    public static List<GameObject> selectedUnits = new List<GameObject>();
-    public static List<GameObject> unitsOnScreen = new List<GameObject>();
+    public static List<GameObject> SelectedUnits = new List<GameObject>();
+    public static List<GameObject> UnitsOnScreen = new List<GameObject>();
     [SerializeField]
-    public static List<GameObject> unitsInDragg = new List<GameObject>();
+    public static List<GameObject> UnitsInDragg = new List<GameObject>();
     
 
     public LayerMask unitLayer;
@@ -102,22 +102,14 @@ public class UnitSelection : MonoBehaviour
     }
     private void LateUpdate()
     {
-        Debug.Log("selected units");
-        for (int i = 0; i < selectedUnits.Count; i++)
+
+        
+        UnitsInDragg.Clear();
+        if ((dragging || draggEndedOnThisFrame) && UnitsOnScreen.Count > 0)
         {
-            Debug.Log(selectedUnits[i]);
-        }
-        Debug.Log("dragged units");
-        for (int i = 0; i < unitsInDragg.Count; i++)
-        {
-            Debug.Log(unitsInDragg[i]);
-        }
-        unitsInDragg.Clear();
-        if ((dragging || draggEndedOnThisFrame) && unitsOnScreen.Count > 0)
-        {
-            for (int i = 0; i < unitsOnScreen.Count; i++)
+            for (int i = 0; i < UnitsOnScreen.Count; i++)
             {
-                GameObject unitOBJ = unitsOnScreen[i] as GameObject;
+                GameObject unitOBJ = UnitsOnScreen[i] as GameObject;
                 Unit unitsScript = unitOBJ.GetComponent<Unit>();
                 GameObject selectionOBJ = unitOBJ.transform.Find("SelectionObject").gameObject;
                 if (!UnitAlreadyInDragg(unitOBJ))
@@ -125,7 +117,7 @@ public class UnitSelection : MonoBehaviour
                     if (IsUnitInsideSelection(unitsScript.screenSpacePosition))
                     {
                         selectionOBJ.SetActive(true);
-                        unitsInDragg.Add(unitOBJ);
+                        UnitsInDragg.Add(unitOBJ);
                     }
                     else
                     {
@@ -179,12 +171,12 @@ public class UnitSelection : MonoBehaviour
     }
     public static void RemoveUnitFromScreenList(GameObject unit)
     {
-        for (int i = 0; i < unitsOnScreen.Count; i++)
+        for (int i = 0; i < UnitsOnScreen.Count; i++)
         {
-            GameObject unitObj = unitsOnScreen[i];
+            GameObject unitObj = UnitsOnScreen[i];
             if (unit == unitObj)
             {
-                unitsOnScreen.RemoveAt(i);
+                UnitsOnScreen.RemoveAt(i);
                 return;
             }
         }
@@ -201,11 +193,11 @@ public class UnitSelection : MonoBehaviour
     }
     public static bool UnitAlreadyInDragg(GameObject unit)
     {
-        if (unitsInDragg.Count > 0)
+        if (UnitsInDragg.Count > 0)
         {
-            for (int i = 0; i < unitsInDragg.Count; i++)
+            for (int i = 0; i < UnitsInDragg.Count; i++)
             {
-                GameObject unitGO = unitsInDragg[i];
+                GameObject unitGO = UnitsInDragg[i];
                 if (unit == unitGO)
                 {
                     return true;
@@ -217,11 +209,11 @@ public class UnitSelection : MonoBehaviour
     }
     public static bool UnitAlreadySelected(GameObject unit)
     {
-        if (selectedUnits.Count > 0)
+        if (SelectedUnits.Count > 0)
         {
-            for (int i = 0; i < selectedUnits.Count; i++)
+            for (int i = 0; i < SelectedUnits.Count; i++)
             {
-                GameObject unitGo = selectedUnits[i];
+                GameObject unitGo = SelectedUnits[i];
                 if (unit == unitGo)
                 {
                     return true;
@@ -237,32 +229,32 @@ public class UnitSelection : MonoBehaviour
         {
             DeselectAllSelectedUnits();
         }
-        if (unitsInDragg.Count > 0)
+        if (UnitsInDragg.Count > 0)
         {
-            for (int i = 0; i < unitsInDragg.Count; i++)
+            for (int i = 0; i < UnitsInDragg.Count; i++)
             {
-                GameObject unit = unitsInDragg[i] as GameObject;
+                GameObject unit = UnitsInDragg[i] as GameObject;
                 if (!UnitAlreadySelected(unit))
                 {
-                    selectedUnits.Add(unit);
+                    SelectedUnits.Add(unit);
                     unit.transform.Find("SelectionObject").gameObject.SetActive(true);
                     unit.GetComponent<Unit>().selected = true;
                 }
             }
-            unitsInDragg.Clear();
+            UnitsInDragg.Clear();
         }
     }
     public static void DeselectAllSelectedUnits()
     {
-        if (selectedUnits.Count > 0)
+        if (SelectedUnits.Count > 0)
         {
-            for (int i = 0; i < selectedUnits.Count; i++)
+            for (int i = 0; i < SelectedUnits.Count; i++)
             {
-                GameObject UnitOBJ = selectedUnits[i] as GameObject;
+                GameObject UnitOBJ = SelectedUnits[i] as GameObject;
                 UnitOBJ.transform.Find("SelectionObject").gameObject.SetActive(false);
                 UnitOBJ.GetComponent<Unit>().selected = false;
             }
-            selectedUnits.Clear();
+            SelectedUnits.Clear();
         }
     }
 }
